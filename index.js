@@ -35,22 +35,33 @@ app.get("/api", (req, res) => {
 app.get("/api/:date", (req, res) => {
   const timestamp = req.params.date;
 
+  if (!timestamp) {
+    return res.json({
+      unix: new Date().getTime(),
+      utc: new Date().toUTCString()
+    });
+  }
+
   if (!isNaN(Number(timestamp))) {
+    const dateObject = new Date(Number(timestamp));
     return res.json({
-      unix: timestamp,
-      utc: new Date(Number(timestamp)).toUTCString()
+      unix: dateObject.getTime(),
+      utc: dateObject.toUTCString()
     });
   }
 
-  if (new Date(timestamp).toUTCString() !== "Invalid Date") {
+  const dateObject = new Date(timestamp);
+  if (!isNaN(dateObject.getTime())) {
     return res.json({
-      unix: new Date(timestamp).getTime(),
-      utc: new Date(timestamp).toUTCString()
+      unix: dateObject.getTime(),
+      utc: dateObject.toUTCString()
     });
   }
 
-  res.json({ error : "Invalid Date" });
+  res.json({ error: "Invalid Date" });
 });
+
+
 
 // listen for requests :)
 const PORT = 3000
